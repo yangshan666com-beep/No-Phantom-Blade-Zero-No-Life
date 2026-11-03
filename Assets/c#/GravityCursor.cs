@@ -8,15 +8,13 @@ public class GravityCursor : MonoBehaviour
 
     public static GravityCursor Instance { get; private set; }
     public bool CursorMode { get; private set; }
-    public bool ConfirmedSelection { get; private set; }
+    public bool Selected { get; private set; }
 
-    Player1 player;
     Vector3 lastMouse;
 
     void Awake()
     {
         Instance = this;
-        player = FindObjectOfType<Player1>();
 
         if (target == null)
         {
@@ -27,11 +25,7 @@ public class GravityCursor : MonoBehaviour
     void Start()
     {
         Cursor.visible = false;
-
-        if (target != null)
-        {
-            transform.position = new Vector3(target.transform.position.x, target.transform.position.y, 0f);
-        }
+        transform.position = new Vector3(0f, 0f, 0f);
     }
 
     void OnDestroy()
@@ -74,96 +68,30 @@ public class GravityCursor : MonoBehaviour
             return;
         }
 
-        bool over = CheckTarget();
+        Selected = CheckTarget();
+        target.Select(Selected);
 
-        if (CursorMode && PadInput.CrossPressed && over && !ConfirmedSelection)
-        {
-            ConfirmedSelection = true;
-        }
-
-        if (ConfirmedSelection)
-        {
-            target.Select(true);
-
-            if (!PlayerSelectingGravity())
-            {
-                if (PadInput.UpPressed)
-                {
-                    Choose(Vector2.up);
-                }
-                else if (PadInput.DownPressed)
-                {
-                    Choose(Vector2.down);
-                }
-                else if (PadInput.LeftPressed)
-                {
-                    Choose(Vector2.left);
-                }
-                else if (PadInput.RightPressed)
-                {
-                    Choose(Vector2.right);
-                }
-            }
-
-            return;
-        }
-
-        target.Select(over);
-
-        if (!over)
-        {
-            return;
-        }
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            return;
-        }
-        if (PlayerSelectingGravity())
+        if (!Selected)
         {
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+        if (Input.GetKeyDown(KeyCode.UpArrow) || (pad && PadInput.UpPressed))
         {
-            Choose(Vector2.up);
+            target.SetDirection(Vector2.up);
         }
-        else if (Input.GetKeyDown(KeyCode.DownArrow))
+        else if (Input.GetKeyDown(KeyCode.DownArrow) || (pad && PadInput.DownPressed))
         {
-            Choose(Vector2.down);
+            target.SetDirection(Vector2.down);
         }
-        else if (Input.GetKeyDown(KeyCode.LeftArrow))
+        else if (Input.GetKeyDown(KeyCode.LeftArrow) || (pad && PadInput.LeftPressed))
         {
-            Choose(Vector2.left);
+            target.SetDirection(Vector2.left);
         }
-        else if (Input.GetKeyDown(KeyCode.RightArrow))
+        else if (Input.GetKeyDown(KeyCode.RightArrow) || (pad && PadInput.RightPressed))
         {
-            Choose(Vector2.right);
+            target.SetDirection(Vector2.right);
         }
-    }
-
-    void Choose(Vector2 dir)
-    {
-        target.SetDirection(dir);
-        target.Select(false);
-        ConfirmedSelection = false;
-    }
-
-    bool PlayerSelectingGravity()
-    {
-        if (player == null)
-        {
-            return false;
-        }
-        if (player.choosingGravity)
-        {
-            return true;
-        }
-        if (player.gravitySelectionFrame == Time.frameCount)
-        {
-            return true;
-        }
-
-        return false;
     }
 
     bool CheckTarget()

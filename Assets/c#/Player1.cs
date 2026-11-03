@@ -9,8 +9,6 @@ public class Player1 : MonoBehaviour
     public Rigidbody2D rb;
     public Animator anim;
     public Vector2 gravityDirection = Vector2.down;
-    public bool choosingGravity;
-    public int gravitySelectionFrame = -1;
 
     SpriteRenderer sprite;
     Collider2D bodyCollider;
@@ -65,20 +63,9 @@ public class Player1 : MonoBehaviour
 
         bool pad = PadInput.Connected;
         bool cursorMode = pad && PadInput.CursorMode;
+        bool blockSelected = GravityCursor.Instance != null && GravityCursor.Instance.Selected;
 
-        if (!cursorMode)
-        {
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                choosingGravity = !choosingGravity;
-            }
-            else if (pad && PadInput.TrianglePressed)
-            {
-                choosingGravity = !choosingGravity;
-            }
-        }
-
-        if (choosingGravity)
+        if (!cursorMode && !blockSelected)
         {
             if (Input.GetKeyDown(KeyCode.UpArrow) || (pad && PadInput.UpPressed))
             {
@@ -279,8 +266,6 @@ public class Player1 : MonoBehaviour
         rb.rotation = 0f;
         rb.velocity = Vector2.zero;
         rb.angularVelocity = 0f;
-        gravitySelectionFrame = Time.frameCount;
-        choosingGravity = false;
         jumpPressed = false;
         jumpLock = 0.1f;
     }
