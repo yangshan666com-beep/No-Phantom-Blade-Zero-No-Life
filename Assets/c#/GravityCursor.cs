@@ -10,11 +10,13 @@ public class GravityCursor : MonoBehaviour
     public bool CursorMode { get; private set; }
     public bool Selected { get; private set; }
 
+    Player1 player;
     Vector3 lastMouse;
 
     void Awake()
     {
         Instance = this;
+        player = FindObjectOfType<Player1>();
 
         if (target == null)
         {
@@ -25,7 +27,15 @@ public class GravityCursor : MonoBehaviour
     void Start()
     {
         Cursor.visible = false;
-        transform.position = new Vector3(0f, 0f, 0f);
+
+        if (player != null)
+        {
+            transform.position = player.transform.position + new Vector3(0f, 1.5f, 0f);
+        }
+        else
+        {
+            transform.position = new Vector3(0f, 0f, 0f);
+        }
     }
 
     void OnDestroy()
