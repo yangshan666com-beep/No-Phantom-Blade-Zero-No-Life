@@ -102,34 +102,36 @@ public class Player1 : MonoBehaviour
 
         if (!cursorMode)
         {
-            float inputX = 0f;
-            float inputY = 0f;
+            float keyX = 0f;
+            float keyY = 0f;
+            float stickX = 0f;
+            float stickY = 0f;
 
             if (Input.GetKey(KeyCode.A))
             {
-                inputX = inputX - 1f;
+                keyX = keyX - 1f;
             }
             if (Input.GetKey(KeyCode.D))
             {
-                inputX = inputX + 1f;
+                keyX = keyX + 1f;
             }
             if (Input.GetKey(KeyCode.W))
             {
-                inputY = inputY + 1f;
+                keyY = keyY + 1f;
             }
             if (Input.GetKey(KeyCode.S))
             {
-                inputY = inputY - 1f;
+                keyY = keyY - 1f;
             }
 
             if (pad)
             {
                 Vector2 stick = PadInput.LeftStick;
-                inputX = inputX + stick.x;
-                inputY = inputY + stick.y;
+                stickX = stick.x;
+                stickY = stick.y;
             }
 
-            Vector2 input = new Vector2(inputX, inputY);
+            Vector2 input = new Vector2(keyX + stickX, keyY + stickY);
 
             if (input.sqrMagnitude > 1f)
             {
@@ -137,7 +139,25 @@ public class Player1 : MonoBehaviour
             }
 
             Vector2 right = new Vector2(-gravityDirection.y, gravityDirection.x);
-            xInput = Mathf.Clamp(Vector2.Dot(input, right), -1f, 1f);
+            float move = Vector2.Dot(input, right);
+
+            if (Mathf.Abs(gravityDirection.x) > 0.5f)
+            {
+                float side = keyX + stickX;
+
+                if (side < -1f)
+                {
+                    side = -1f;
+                }
+                if (side > 1f)
+                {
+                    side = 1f;
+                }
+
+                move = move + side;
+            }
+
+            xInput = Mathf.Clamp(move, -1f, 1f);
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
