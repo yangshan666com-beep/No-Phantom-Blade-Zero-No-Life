@@ -1,0 +1,70 @@
+########################################
+# Unity 2022 项目 .gitignore（通用版 v2）
+#
+# 两条必须理解的 git 规则：
+#   1. 不带 "/" 的规则（如 Library/）→ 匹配【任意层级】的同名目录
+#   2. 带 "/" 的规则是【锚定】到本文件所在目录的，
+#      想让它在子目录里也生效，必须显式写成 "**/xxx"
+########################################
+
+# ==== Unity 自动生成的缓存 / 构建产物（任意层级都挡）====
+# Library 是几万个缓存文件、2 GB 级别，提交进去仓库就废了
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+[Rr]ecordings/
+[Uu]ser[Ss]ettings/
+
+# ==== 资源商店 / 插件自动生成的工具目录 ====
+[Aa]ssetStoreTools*
+**/[Aa]ssets/Plugins/Editor/JetBrains*
+
+# ==== IDE 生成的文件（各自机器上重新生成）====
+.vs/
+.idea/
+.gradle/
+ExportedObj/
+**/.vscode/*
+!**/.vscode/extensions.json
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# ==== 崩溃报告 ====
+sysinfo.txt
+
+# ==== 打包产物（走 GitHub Releases 或网盘，不要进仓库）====
+*.apk
+*.aab
+*.app
+*.unitypackage
+
+# ==== 其他生成物 ====
+crashlytics-build.properties
+**/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
+**/[Aa]ssets/[Ss]treamingAssets/aa
+
+# ==== Assets 下的 .meta 必须提交，不要忽略 ====
+!**/[Aa]ssets/**/*.meta
+
+# ==== 本项目额外忽略 ====
+.DS_Store
+PadBridge/gamepadbridge
