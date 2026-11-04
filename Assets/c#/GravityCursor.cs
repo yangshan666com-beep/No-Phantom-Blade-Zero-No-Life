@@ -4,24 +4,19 @@ public class GravityCursor : MonoBehaviour
 {
     public float radius = 2f;
     public float cursorSpeed = 6f;
-    public GravityBlock target;
 
     public static GravityCursor Instance { get; private set; }
     public bool CursorMode { get; private set; }
     public bool Selected { get; private set; }
 
     Player1 player;
+    GravityBlock target;
     Vector3 lastMouse;
 
     void Awake()
     {
         Instance = this;
         player = FindObjectOfType<Player1>();
-
-        if (target == null)
-        {
-            target = FindObjectOfType<GravityBlock>();
-        }
     }
 
     void Start()
@@ -46,6 +41,7 @@ public class GravityCursor : MonoBehaviour
         if (target != null)
         {
             target.Select(false);
+            target = null;
         }
     }
 
@@ -73,18 +69,26 @@ public class GravityCursor : MonoBehaviour
 
         lastMouse = Input.mousePosition;
 
-        if (target == null)
+        GravityBlock next = FindTarget();
+
+        if (next != target)
         {
-            return;
+            if (target != null)
+            {
+                target.Select(false);
+            }
+
+            target = next;
         }
 
-        Selected = CheckTarget();
-        target.Select(Selected);
+        Selected = target != null;
 
         if (!Selected)
         {
             return;
         }
+
+        target.Select(true);
 
         if (Input.GetKeyDown(KeyCode.UpArrow) || (pad && PadInput.UpPressed))
         {
@@ -104,21 +108,26 @@ public class GravityCursor : MonoBehaviour
         }
     }
 
-    bool CheckTarget()
+    GravityBlock FindTarget()
     {
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, radius);
         int i = 0;
 
         while (i < hits.Length)
         {
-            if (hits[i].gameObject == target.gameObject)
+            if (hits[i].gameObject.name.ToUpper().Contains("GI"))
             {
-                return true;
+                GravityBlock block = hits[i].GetComponent<GravityBlock>();
+
+                if (block != null)
+                {
+                    return block;
+                }
             }
 
             i = i + 1;
         }
 
-        return false;
+        return null;
     }
 }
