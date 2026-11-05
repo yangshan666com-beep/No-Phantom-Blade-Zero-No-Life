@@ -29,6 +29,11 @@ public class GravityCursor : MonoBehaviour
         SetVisible(false);
     }
 
+    public void SetPlayer(Player1 newPlayer)
+    {
+        player = newPlayer;
+    }
+
     void OnDestroy()
     {
         Instance = null;

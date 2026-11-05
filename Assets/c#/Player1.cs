@@ -19,6 +19,7 @@ public class Player1 : MonoBehaviour
     float jumpLock;
     bool onGround;
     bool airFlipUsed;
+    bool controlEnabled = true;
     public int jumpHoldFrame = 3;
     public float jumpFinishDistance = 1.5f;
     AnimationClip jumpClip;
@@ -71,7 +72,7 @@ public class Player1 : MonoBehaviour
         bool cursorMode = pad && PadInput.CursorMode;
         bool blockSelected = GravityCursor.Instance != null && GravityCursor.Instance.Selected;
 
-        if (!cursorMode && !blockSelected)
+        if (!cursorMode && !blockSelected && controlEnabled)
         {
             if (Input.GetKeyDown(KeyCode.UpArrow) || (pad && PadInput.UpPressed))
             {
@@ -93,7 +94,7 @@ public class Player1 : MonoBehaviour
 
         xInput = 0f;
 
-        if (!cursorMode)
+        if (!cursorMode && controlEnabled)
         {
             float keyX = 0f;
             float keyY = 0f;
@@ -281,6 +282,17 @@ public class Player1 : MonoBehaviour
         rb.angularVelocity = 0f;
         jumpPressed = false;
         jumpLock = 0.1f;
+    }
+
+    public void SetControlEnabled(bool on)
+    {
+        controlEnabled = on;
+
+        if (!on)
+        {
+            xInput = 0f;
+            jumpPressed = false;
+        }
     }
 
     void TryChangeGravity(Vector2 dir)
