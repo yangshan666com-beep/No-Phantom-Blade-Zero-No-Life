@@ -4,8 +4,7 @@
 ########################################
 
 # 统一按文本处理，避免 Windows / macOS 换行符互相污染
-* text=auto
-
+* text=auto eol=lf
 # ==== Unity 的 YAML 文本资源：交给 UnityYAMLMerge 合并 ====
 # 需要先用 git config 注册 merge.unityyamlmerge 驱动（只对命令行 git merge 生效）
 *.unity              merge=unityyamlmerge eol=lf
