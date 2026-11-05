@@ -17,6 +17,12 @@ public class Player1 : MonoBehaviour
     float xInput;
     bool jumpPressed;
     float jumpLock;
+    bool onGround;
+    bool airFlipUsed;
+    public int jumpHoldFrame = 3;
+    public float jumpFinishDistance = 1.5f;
+    AnimationClip jumpClip;
+    float jumpHoldTime;
 
     void Awake()
     {
@@ -69,19 +75,19 @@ public class Player1 : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.UpArrow) || (pad && PadInput.UpPressed))
             {
-                ChangeGravity(Vector2.up);
+                TryChangeGravity(Vector2.up);
             }
             else if (Input.GetKeyDown(KeyCode.DownArrow) || (pad && PadInput.DownPressed))
             {
-                ChangeGravity(Vector2.down);
+                TryChangeGravity(Vector2.down);
             }
             else if (Input.GetKeyDown(KeyCode.LeftArrow) || (pad && PadInput.LeftPressed))
             {
-                ChangeGravity(Vector2.left);
+                TryChangeGravity(Vector2.left);
             }
             else if (Input.GetKeyDown(KeyCode.RightArrow) || (pad && PadInput.RightPressed))
             {
-                ChangeGravity(Vector2.right);
+                TryChangeGravity(Vector2.right);
             }
         }
 
@@ -167,6 +173,8 @@ public class Player1 : MonoBehaviour
                 sprite.flipX = true;
             }
         }
+
+        UpdateJumpAnimation();
     }
 
     void FixedUpdate()
@@ -187,13 +195,18 @@ public class Player1 : MonoBehaviour
         float gravitySpeed = Vector2.Dot(rb.velocity, gravityDirection);
         rb.velocity = right * xInput * moveSpeed + gravityDirection * gravitySpeed;
 
-        bool grounded = CheckGround();
+        onGround = CheckGround();
 
-        if (jumpPressed && grounded)
+        if (onGround)
+        {
+            airFlipUsed = false;
+        }
+
+        if (jumpPressed && onGround)
         {
             rb.velocity = right * xInput * moveSpeed - gravityDirection * jumpForce;
             jumpLock = 0.15f;
-            grounded = false;
+            onGround = false;
 
             if (anim != null)
             {
@@ -207,7 +220,7 @@ public class Player1 : MonoBehaviour
         if (anim != null)
         {
             anim.SetBool("ismoving", xInput != 0f);
-            anim.SetBool("isGrounded", grounded);
+            anim.SetBool("isGrounded", onGround);
             anim.SetFloat("verticalSpeed", Vector2.Dot(rb.velocity, -gravityDirection));
         }
     }
@@ -268,6 +281,178 @@ public class Player1 : MonoBehaviour
         rb.angularVelocity = 0f;
         jumpPressed = false;
         jumpLock = 0.1f;
+    }
+
+    void TryChangeGravity(Vector2 dir)
+    {
+        if (!CheckGround())
+        {
+            if (airFlipUsed)
+            {
+                return;
+            }
+
+            airFlipUsed = true;
+        }
+
+        ChangeGravity(dir);
+    }
+
+    void UpdateJumpAnimation()
+    {
+        if (anim == null || rb == null)
+        {
+            return;
+        }
+
+        CacheJumpClip();
+
+        if (jumpClip == null)
+        {
+            return;
+        }
+
+        AnimatorStateInfo info = anim.GetCurrentAnimatorStateInfo(0);
+
+        if (!info.IsName("Playerjump"))
+        {
+            anim.speed = 1f;
+            return;
+        }
+
+        if (onGround)
+        {
+            anim.speed = 1f;
+            return;
+        }
+
+        float fallSpeed = Vector2.Dot(rb.velocity, gravityDirection);
+
+        if (fallSpeed <= 0.1f)
+        {
+            anim.speed = 1f;
+            return;
+        }
+
+        float gap = GroundGap();
+
+        if (gap > jumpFinishDistance)
+        {
+            anim.speed = 0f;
+            anim.Play("Playerjump", 0, jumpHoldTime);
+        }
+        else
+        {
+            float progress = 1f - Mathf.Clamp01(gap / jumpFinishDistance);
+            float time = Mathf.Lerp(jumpHoldTime, 1f, progress);
+            anim.speed = 0f;
+            anim.Play("Playerjump", 0, time);
+        }
+    }
+
+    void CacheJumpClip()
+    {
+        if (jumpClip != null)
+        {
+            return;
+        }
+
+        RuntimeAnimatorController controller = anim.runtimeAnimatorController;
+
+        if (controller == null)
+        {
+            return;
+        }
+
+        AnimationClip[] clips = controller.animationClips;
+        int i = 0;
+
+        while (i < clips.Length)
+        {
+            if (clips[i] != null && clips[i].name.ToLower().Contains("jump"))
+            {
+                jumpClip = clips[i];
+                break;
+            }
+
+            i = i + 1;
+        }
+
+        if (jumpClip == null)
+        {
+            return;
+        }
+
+        int frames = Mathf.RoundToInt(jumpClip.length * jumpClip.frameRate) + 1;
+
+        if (frames < 2)
+        {
+            frames = 2;
+        }
+
+        jumpHoldTime = Mathf.Clamp01((jumpHoldFrame - 1f) / (frames - 1f));
+    }
+
+    float GroundGap()
+    {
+        if (bodyCollider == null)
+        {
+            return 99f;
+        }
+
+        Bounds bounds = bodyCollider.bounds;
+        Vector2 right = new Vector2(-gravityDirection.y, gravityDirection.x);
+        float depth;
+        float width;
+
+        if (Mathf.Abs(gravityDirection.x) > 0.5f)
+        {
+            depth = bounds.extents.x;
+        }
+        else
+        {
+            depth = bounds.extents.y;
+        }
+
+        if (Mathf.Abs(right.x) > 0.5f)
+        {
+            width = bounds.extents.x;
+        }
+        else
+        {
+            width = bounds.extents.y;
+        }
+
+        float best = 99f;
+        int i = -1;
+
+        while (i <= 1)
+        {
+            Vector2 origin = (Vector2)bounds.center + right * width * 0.75f * i;
+            RaycastHit2D[] hits = Physics2D.RaycastAll(origin, gravityDirection, depth + 3f);
+            int n = 0;
+
+            while (n < hits.Length)
+            {
+                Collider2D hit = hits[n].collider;
+
+                if (hit != null && !hit.isTrigger && hit.attachedRigidbody != rb)
+                {
+                    float gap = hits[n].distance - depth;
+
+                    if (gap < best)
+                    {
+                        best = gap;
+                    }
+                }
+
+                n = n + 1;
+            }
+
+            i = i + 1;
+        }
+
+        return Mathf.Max(0f, best);
     }
 
     bool CheckGround()
