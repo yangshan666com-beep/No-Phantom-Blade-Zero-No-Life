@@ -8,6 +8,10 @@ public class GravityCursor : MonoBehaviour
     public static GravityCursor Instance { get; private set; }
     public bool CursorMode { get; private set; }
     public bool Selected { get; private set; }
+    public GravityBlock Target
+    {
+        get { return target; }
+    }
 
     Player1 player;
     GravityBlock target;
@@ -111,6 +115,11 @@ public class GravityCursor : MonoBehaviour
         }
 
         target.Select(true);
+
+        if (pad && PadInput.CursorMode)
+        {
+            return;
+        }
 
         if (Input.GetKeyDown(KeyCode.UpArrow) || (pad && PadInput.UpPressed))
         {

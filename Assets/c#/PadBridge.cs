@@ -17,6 +17,8 @@ public static class PadBridge
     static volatile float stickX;
     static volatile float stickY;
     static volatile float triggerL;
+    static volatile float rightX;
+    static volatile float rightY;
 
     static int crossTime;
     static int triangleTime;
@@ -47,6 +49,22 @@ public static class PadBridge
         {
             float x = stickX;
             float y = stickY;
+
+            if (x * x + y * y < 0.04f)
+            {
+                return Vector2.zero;
+            }
+
+            return new Vector2(x, y);
+        }
+    }
+
+    public static Vector2 RightStick
+    {
+        get
+        {
+            float x = rightX;
+            float y = rightY;
 
             if (x * x + y * y < 0.04f)
             {
@@ -260,6 +278,8 @@ public static class PadBridge
         float x;
         float y;
         float l2;
+        float rx = 0f;
+        float ry = 0f;
 
         if (!float.TryParse(parts[1], NumberStyles.Float, CultureInfo.InvariantCulture, out x))
         {
@@ -274,9 +294,17 @@ public static class PadBridge
             return;
         }
 
+        if (parts.Length >= 12)
+        {
+            float.TryParse(parts[4], NumberStyles.Float, CultureInfo.InvariantCulture, out rx);
+            float.TryParse(parts[5], NumberStyles.Float, CultureInfo.InvariantCulture, out ry);
+        }
+
         stickX = x;
         stickY = y;
         triggerL = l2;
+        rightX = rx;
+        rightY = ry;
         hasState = true;
     }
 

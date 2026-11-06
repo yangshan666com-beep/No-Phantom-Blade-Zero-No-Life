@@ -76,6 +76,8 @@ func poll()
     let lx = p.leftThumbstick.xAxis.value
     let ly = p.leftThumbstick.yAxis.value
     let l2 = p.leftTrigger.value
+    let rx = p.rightThumbstick.xAxis.value
+    let ry = p.rightThumbstick.yAxis.value
     let cross = p.buttonA.isPressed ? 1 : 0
     let triangle = p.buttonY.isPressed ? 1 : 0
     let up = p.dpad.up.isPressed ? 1 : 0
@@ -90,7 +92,7 @@ func poll()
     pressEvent("left", &prevLeft, left)
     pressEvent("right", &prevRight, right)
 
-    let line = String(format: "PAD %.3f %.3f %.3f %d %d %d %d %d %d", lx, ly, l2, cross, triangle, up, down, left, right)
+    let line = String(format: "PAD %.3f %.3f %.3f %.3f %.3f %d %d %d %d %d %d", lx, ly, l2, rx, ry, cross, triangle, up, down, left, right)
     if line != lastLine
     {
         lastLine = line

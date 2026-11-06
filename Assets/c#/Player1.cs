@@ -22,8 +22,12 @@ public class Player1 : MonoBehaviour
     bool controlEnabled = true;
     public int jumpHoldFrame = 3;
     public float jumpFinishDistance = 1.5f;
+    public float blockBounceHeight = 1f / 3f;
     AnimationClip jumpClip;
     float jumpHoldTime;
+    Rigidbody2D rideBody;
+    Vector2 rideLastPos;
+    bool wasRiding;
 
     void Awake()
     {
@@ -58,6 +62,7 @@ public class Player1 : MonoBehaviour
 
         rb.gravityScale = 0f;
         rb.freezeRotation = true;
+        rb.interpolation = RigidbodyInterpolation2D.Interpolate;
         ChangeGravity(gravityDirection);
     }
 
@@ -193,10 +198,45 @@ public class Player1 : MonoBehaviour
         }
 
         Vector2 right = new Vector2(-gravityDirection.y, gravityDirection.x);
+        Rigidbody2D support;
+        onGround = CheckGround(out support);
+        Rigidbody2D platform = null;
+
+        if (onGround && support != null && support != rb && support.bodyType != RigidbodyType2D.Static)
+        {
+            platform = support;
+        }
+
+        CarryPlatform(platform);
+        bool jumping = jumpPressed && onGround;
+
+        if (!jumping)
+        {
+            float keep = Mathf.Sqrt(Mathf.Clamp01(blockBounceHeight));
+
+            if (platform != null)
+            {
+                float up = Vector2.Dot(rb.velocity, -gravityDirection);
+                float platformUp = Vector2.Dot(platform.velocity, -gravityDirection);
+
+                if (up > platformUp)
+                {
+                    rb.velocity = rb.velocity + gravityDirection * ((up - platformUp) * (1f - keep));
+                }
+            }
+            else if (wasRiding)
+            {
+                float up = Vector2.Dot(rb.velocity, -gravityDirection);
+
+                if (up > 0f)
+                {
+                    rb.velocity = rb.velocity + gravityDirection * (up * (1f - keep));
+                }
+            }
+        }
+
         float gravitySpeed = Vector2.Dot(rb.velocity, gravityDirection);
         rb.velocity = right * xInput * moveSpeed + gravityDirection * gravitySpeed;
-
-        onGround = CheckGround();
 
         if (onGround)
         {
@@ -216,6 +256,7 @@ public class Player1 : MonoBehaviour
         }
 
         jumpPressed = false;
+        wasRiding = platform != null && !jumping;
         rb.AddForce(gravityDirection * gravityForce * rb.mass);
 
         if (anim != null)
@@ -297,16 +338,12 @@ public class Player1 : MonoBehaviour
 
     void TryChangeGravity(Vector2 dir)
     {
-        if (!CheckGround())
+        if (airFlipUsed)
         {
-            if (airFlipUsed)
-            {
-                return;
-            }
-
-            airFlipUsed = true;
+            return;
         }
 
+        airFlipUsed = true;
         ChangeGravity(dir);
     }
 
@@ -467,8 +504,40 @@ public class Player1 : MonoBehaviour
         return Mathf.Max(0f, best);
     }
 
+    void CarryPlatform(Rigidbody2D support)
+    {
+        if (!onGround || support == null || support == rb || support.bodyType == RigidbodyType2D.Static)
+        {
+            rideBody = null;
+            return;
+        }
+
+        if (rideBody == support)
+        {
+            Vector2 delta = support.position - rideLastPos;
+            Vector2 right = new Vector2(-gravityDirection.y, gravityDirection.x);
+            Vector2 tangent = right * Vector2.Dot(delta, right);
+
+            if (tangent.sqrMagnitude > 0f)
+            {
+                rb.position = rb.position + tangent;
+            }
+        }
+
+        rideBody = support;
+        rideLastPos = support.position;
+    }
+
     bool CheckGround()
     {
+        Rigidbody2D support;
+        return CheckGround(out support);
+    }
+
+    bool CheckGround(out Rigidbody2D support)
+    {
+        support = null;
+
         if (bodyCollider == null)
         {
             return false;
@@ -501,6 +570,8 @@ public class Player1 : MonoBehaviour
             width = bounds.extents.y;
         }
 
+        bool found = false;
+        float best = float.MaxValue;
         int i = -1;
 
         while (i <= 1)
@@ -515,7 +586,12 @@ public class Player1 : MonoBehaviour
 
                 if (hit != null && !hit.isTrigger && hit.attachedRigidbody != rb)
                 {
-                    return true;
+                    if (!found || hits[n].distance < best)
+                    {
+                        best = hits[n].distance;
+                        support = hit.attachedRigidbody;
+                        found = true;
+                    }
                 }
 
                 n = n + 1;
@@ -524,6 +600,6 @@ public class Player1 : MonoBehaviour
             i = i + 1;
         }
 
-        return false;
+        return found;
     }
 }

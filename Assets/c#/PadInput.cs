@@ -12,6 +12,11 @@ public static class PadInput
         get { return PadBridge.LeftStick; }
     }
 
+    public static Vector2 RightStick
+    {
+        get { return PadBridge.RightStick; }
+    }
+
     public static float LeftTrigger
     {
         get { return PadBridge.LeftTrigger; }

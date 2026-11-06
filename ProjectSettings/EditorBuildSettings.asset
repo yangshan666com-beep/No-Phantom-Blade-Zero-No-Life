@@ -8,4 +8,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Main.unity
     guid: 5df0f3c5834bb4e098ea977345288eda
+  - enabled: 1
+    path: Assets/Scenes/ZhuKongDemo.unity
+    guid: 8cf559e5cab2142868ba3e823d9e7232
+  - enabled: 1
+    path: Assets/Scenes/MergedMap.unity
+    guid: 4192a1d5dc72c460b9505557ea1ecf19
   m_configObjects: {}
