@@ -9,8 +9,10 @@ public class Player1 : MonoBehaviour
     public Rigidbody2D rb;
     public Animator anim;
     public Vector2 gravityDirection = Vector2.down;
+    public Color selectedColor = new Color(0.6f, 0.85f, 1f);
 
     SpriteRenderer sprite;
+    Color spriteColor;
     Collider2D bodyCollider;
     CapsuleCollider2D capsule;
     Vector2 capsuleSize;
@@ -18,7 +20,6 @@ public class Player1 : MonoBehaviour
     bool jumpPressed;
     float jumpLock;
     bool onGround;
-    bool airFlipUsed;
     bool controlEnabled = true;
     public int jumpHoldFrame = 3;
     public float jumpFinishDistance = 1.5f;
@@ -42,6 +43,11 @@ public class Player1 : MonoBehaviour
 
         sprite = GetComponentInChildren<SpriteRenderer>();
         bodyCollider = GetComponent<Collider2D>();
+
+        if (sprite != null)
+        {
+            spriteColor = sprite.color;
+        }
 
         if (bodyCollider == null)
         {
@@ -75,9 +81,8 @@ public class Player1 : MonoBehaviour
 
         bool pad = PadInput.Connected;
         bool cursorMode = pad && PadInput.CursorMode;
-        bool blockSelected = GravityCursor.Instance != null && GravityCursor.Instance.Selected;
 
-        if (!cursorMode && !blockSelected && controlEnabled)
+        if (!cursorMode && controlEnabled)
         {
             if (Input.GetKeyDown(KeyCode.UpArrow) || (pad && PadInput.UpPressed))
             {
@@ -238,11 +243,6 @@ public class Player1 : MonoBehaviour
         float gravitySpeed = Vector2.Dot(rb.velocity, gravityDirection);
         rb.velocity = right * xInput * moveSpeed + gravityDirection * gravitySpeed;
 
-        if (onGround)
-        {
-            airFlipUsed = false;
-        }
-
         if (jumpPressed && onGround)
         {
             rb.velocity = right * xInput * moveSpeed - gravityDirection * jumpForce;
@@ -267,7 +267,7 @@ public class Player1 : MonoBehaviour
         }
     }
 
-    void ChangeGravity(Vector2 dir)
+    public void ChangeGravity(Vector2 dir)
     {
         if (rb == null)
         {
@@ -336,15 +336,24 @@ public class Player1 : MonoBehaviour
         }
     }
 
-    void TryChangeGravity(Vector2 dir)
+    public void TryChangeGravity(Vector2 dir)
     {
-        if (airFlipUsed)
+        if (!onGround)
         {
             return;
         }
 
-        airFlipUsed = true;
         ChangeGravity(dir);
+    }
+
+    public void Select(bool on)
+    {
+        if (sprite == null)
+        {
+            return;
+        }
+
+        sprite.color = on ? selectedColor : spriteColor;
     }
 
     void UpdateJumpAnimation()

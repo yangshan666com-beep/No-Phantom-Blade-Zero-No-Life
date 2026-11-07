@@ -19,6 +19,34 @@ public class GravityBlock : MonoBehaviour
         body.mass = holdMass;
         body.interpolation = RigidbodyInterpolation2D.Interpolate;
         normalColor = sprite.color;
+        ApplyNameDirection();
+    }
+
+    void Start()
+    {
+        ApplyNameDirection();
+    }
+
+    void ApplyNameDirection()
+    {
+        string n = gameObject.name.ToUpperInvariant();
+
+        if (n.Contains("GIW"))
+        {
+            gravityDirection = Vector2.up;
+        }
+        else if (n.Contains("GIA"))
+        {
+            gravityDirection = Vector2.left;
+        }
+        else if (n.Contains("GIS"))
+        {
+            gravityDirection = Vector2.down;
+        }
+        else if (n.Contains("GID"))
+        {
+            gravityDirection = Vector2.right;
+        }
     }
 
     void FixedUpdate()

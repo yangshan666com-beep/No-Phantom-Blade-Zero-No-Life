@@ -21,6 +21,9 @@ public class GravityRingUI : MonoBehaviour
     static readonly float[] centers = { 0f, 90f, 180f, -90f };
 
     GravityBlock block;
+    Player1 player;
+    SpriteRenderer playerSprite;
+    bool allMode;
     Collider2D body;
     SpriteRenderer blockSprite;
     SpriteRenderer tintOverlay;
@@ -173,19 +176,31 @@ public class GravityRingUI : MonoBehaviour
         Vector2 world = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         GravityBlock found = FindBlock(world);
 
-        if (found == null)
+        if (found != null)
         {
-            return;
+            Collider2D foundBody = found.GetComponentInChildren<Collider2D>();
+
+            if (foundBody != null)
+            {
+                StartHoldBlock(found, foundBody);
+                return;
+            }
         }
 
-        Collider2D foundBody = found.GetComponentInChildren<Collider2D>();
+        Player1 foundPlayer = FindPlayer(world);
 
-        if (foundBody == null)
+        if (foundPlayer != null)
         {
-            return;
+            Collider2D playerBody = foundPlayer.GetComponentInChildren<Collider2D>();
+
+            if (playerBody != null)
+            {
+                StartHoldPlayer(foundPlayer, playerBody);
+                return;
+            }
         }
 
-        StartHold(found, foundBody);
+        StartHoldAll(world);
     }
 
     GravityBlock FindBlock(Vector2 world)
@@ -232,9 +247,70 @@ public class GravityRingUI : MonoBehaviour
         return best;
     }
 
-    void StartHold(GravityBlock target, Collider2D targetBody)
+    Player1 FindPlayer(Vector2 world)
+    {
+        Collider2D[] hits = Physics2D.OverlapPointAll(world);
+        int i = 0;
+
+        while (i < hits.Length)
+        {
+            Player1 found = hits[i].GetComponentInParent<Player1>();
+
+            if (found != null)
+            {
+                return found;
+            }
+
+            i = i + 1;
+        }
+
+        return null;
+    }
+
+    Vector2 TargetCenter()
+    {
+        if (player != null && playerSprite != null)
+        {
+            return playerSprite.bounds.center;
+        }
+
+        if (body != null)
+        {
+            return body.bounds.center;
+        }
+
+        return ringCenter;
+    }
+
+    float TargetExtents()
+    {
+        if (player != null && playerSprite != null)
+        {
+            Bounds bounds = playerSprite.bounds;
+            float ext = Mathf.Max(bounds.extents.x, bounds.extents.y);
+
+            if (body != null)
+            {
+                ext = Mathf.Max(ext, body.bounds.extents.x, body.bounds.extents.y);
+            }
+
+            return ext;
+        }
+
+        if (body != null)
+        {
+            return Mathf.Max(body.bounds.extents.x, body.bounds.extents.y);
+        }
+
+        return 1f;
+    }
+
+    void StartHoldBlock(GravityBlock target, Collider2D targetBody)
     {
         block = target;
+        player = null;
+        playerSprite = null;
+        allMode = false;
         body = targetBody;
         blockSprite = block.GetComponent<SpriteRenderer>();
 
@@ -246,6 +322,40 @@ public class GravityRingUI : MonoBehaviour
 
         blockColor = blockSprite.color;
         sortingLayer = blockSprite.sortingLayerID;
+        BeginHold();
+        MakeTint();
+    }
+
+    void StartHoldPlayer(Player1 target, Collider2D targetBody)
+    {
+        block = null;
+        player = target;
+        playerSprite = target.GetComponentInChildren<SpriteRenderer>();
+        allMode = false;
+        body = targetBody;
+        blockSprite = null;
+        sortingLayer = 0;
+        BeginHold();
+        ringCenter = TargetCenter();
+        ringScale = Mathf.Max(TargetExtents(), 0.5f) * radiusScale / 0.38f;
+    }
+
+    void StartHoldAll(Vector2 center)
+    {
+        block = null;
+        player = null;
+        playerSprite = null;
+        allMode = true;
+        body = null;
+        blockSprite = null;
+        sortingLayer = 0;
+        BeginHold();
+        ringCenter = center;
+        ringScale = radiusScale;
+    }
+
+    void BeginHold()
+    {
         holding = true;
         activated = false;
         hasDirection = false;
@@ -253,9 +363,13 @@ public class GravityRingUI : MonoBehaviour
         alpha = 0f;
         tint = 0f;
         pressTime = Time.time;
-        ringCenter = body.bounds.center;
+
+        if (body != null)
+        {
+            ringCenter = body.bounds.center;
+        }
+
         ClearSegments();
-        MakeTint();
     }
 
     void ClearSegments()
@@ -275,12 +389,15 @@ public class GravityRingUI : MonoBehaviour
 
     void UpdateDirection()
     {
-        if (Camera.main == null || body == null)
+        if (Camera.main == null)
         {
             return;
         }
 
-        ringCenter = body.bounds.center;
+        if (body != null)
+        {
+            ringCenter = body.bounds.center;
+        }
         Vector2 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 delta = mouse - (Vector2)ringCenter;
 
@@ -314,38 +431,70 @@ public class GravityRingUI : MonoBehaviour
             return;
         }
 
-        GravityBlock target = GravityCursor.Instance != null ? GravityCursor.Instance.Target : null;
+        GravityCursor cursor = GravityCursor.Instance;
+        GravityBlock targetBlock = cursor != null ? cursor.Target : null;
+        Player1 targetPlayer = cursor != null ? cursor.Player : null;
 
-        if (target == null)
+        if (targetBlock != null)
         {
-            if (padMode)
+            Collider2D targetBody = targetBlock.GetComponentInChildren<Collider2D>();
+
+            if (targetBody == null)
             {
-                FinishPad(false);
+                if (padMode)
+                {
+                    FinishPad(false);
+                }
+
+                return;
             }
 
-            return;
+            if (!padMode || block != targetBlock || player != null || allMode)
+            {
+                if (padMode)
+                {
+                    FinishPad(false);
+                }
+
+                StartPadBlock(targetBlock, targetBody);
+            }
         }
-
-        Collider2D targetBody = target.GetComponentInChildren<Collider2D>();
-
-        if (targetBody == null)
+        else if (targetPlayer != null)
         {
-            if (padMode)
+            Collider2D targetBody = targetPlayer.GetComponentInChildren<Collider2D>();
+
+            if (targetBody == null)
             {
-                FinishPad(false);
+                if (padMode)
+                {
+                    FinishPad(false);
+                }
+
+                return;
             }
 
-            return;
+            if (!padMode || player != targetPlayer || block != null || allMode)
+            {
+                if (padMode)
+                {
+                    FinishPad(false);
+                }
+
+                StartPadPlayer(targetPlayer, targetBody);
+            }
         }
-
-        if (!padMode || block != target)
+        else
         {
-            if (padMode)
+            if (!padMode || !allMode)
             {
-                FinishPad(false);
-            }
+                if (padMode)
+                {
+                    FinishPad(false);
+                }
 
-            StartPad(target, targetBody);
+                Vector2 center = cursor != null ? (Vector2)cursor.transform.position : Vector2.zero;
+                StartPadAll(center);
+            }
         }
 
         if (!activated)
@@ -356,9 +505,25 @@ public class GravityRingUI : MonoBehaviour
         ReadPadDirection();
     }
 
-    void StartPad(GravityBlock target, Collider2D targetBody)
+    void StartPadBlock(GravityBlock target, Collider2D targetBody)
     {
-        StartHold(target, targetBody);
+        StartHoldBlock(target, targetBody);
+        padMode = true;
+        PadActive = true;
+        Activate();
+    }
+
+    void StartPadPlayer(Player1 target, Collider2D targetBody)
+    {
+        StartHoldPlayer(target, targetBody);
+        padMode = true;
+        PadActive = true;
+        Activate();
+    }
+
+    void StartPadAll(Vector2 center)
+    {
+        StartHoldAll(center);
         padMode = true;
         PadActive = true;
         Activate();
@@ -366,9 +531,9 @@ public class GravityRingUI : MonoBehaviour
 
     void FinishPad(bool apply)
     {
-        if (apply && hasDirection && block != null)
+        if (apply)
         {
-            block.SetDirection(direction);
+            ApplyDirection();
         }
 
         if (body != null)
@@ -408,10 +573,7 @@ public class GravityRingUI : MonoBehaviour
         {
             stickWasActive = false;
 
-            if (hasDirection && block != null)
-            {
-                block.SetDirection(direction);
-            }
+            ApplyDirection();
         }
 
         if (PadInput.UpPressed)
@@ -438,9 +600,9 @@ public class GravityRingUI : MonoBehaviour
 
     void End()
     {
-        if (activated && hasDirection && block != null)
+        if (activated)
         {
-            block.SetDirection(direction);
+            ApplyDirection();
         }
 
         if (body != null)
@@ -456,6 +618,49 @@ public class GravityRingUI : MonoBehaviour
         PadActive = false;
         stickWasActive = false;
         RestoreTint();
+    }
+
+    void ApplyDirection()
+    {
+        if (!hasDirection)
+        {
+            return;
+        }
+
+        if (block != null)
+        {
+            block.SetDirection(direction);
+            return;
+        }
+
+        if (player != null)
+        {
+            player.TryChangeGravity(direction);
+            return;
+        }
+
+        if (!allMode)
+        {
+            return;
+        }
+
+        GravityBlock[] blocks = FindObjectsOfType<GravityBlock>();
+        int i = 0;
+
+        while (i < blocks.Length)
+        {
+            blocks[i].SetDirection(direction);
+            i = i + 1;
+        }
+
+        Player1[] players = FindObjectsOfType<Player1>();
+        i = 0;
+
+        while (i < players.Length)
+        {
+            players[i].TryChangeGravity(direction);
+            i = i + 1;
+        }
     }
 
     void Cancel()
@@ -496,6 +701,9 @@ public class GravityRingUI : MonoBehaviour
         }
 
         block = null;
+        player = null;
+        playerSprite = null;
+        allMode = false;
         body = null;
         blockSprite = null;
     }
@@ -503,6 +711,9 @@ public class GravityRingUI : MonoBehaviour
     void ClearBlock()
     {
         block = null;
+        player = null;
+        playerSprite = null;
+        allMode = false;
         body = null;
         blockSprite = null;
         holding = false;
@@ -522,6 +733,11 @@ public class GravityRingUI : MonoBehaviour
         }
 
         alpha = Mathf.MoveTowards(alpha, targetAlpha, dt / duration);
+
+        if (player != null && playerSprite != null)
+        {
+            ringCenter = playerSprite.bounds.center;
+        }
 
         if (blockSprite != null)
         {
@@ -562,14 +778,22 @@ public class GravityRingUI : MonoBehaviour
             ringRenderer.sprite = Sprite.Create(ringTexture, new Rect(0f, 0f, textureSize, textureSize), new Vector2(0.5f, 0.5f), textureSize);
         }
 
-        if (body == null)
+        if (player != null && playerSprite != null)
         {
-            return;
+            ringCenter = playerSprite.bounds.center;
+            ringScale = Mathf.Max(TargetExtents(), 0.5f) * radiusScale / 0.38f;
+        }
+        else if (body != null)
+        {
+            ringCenter = body.bounds.center;
+            float ext = Mathf.Max(body.bounds.extents.x, body.bounds.extents.y);
+            ringScale = ext * radiusScale / 0.38f;
+        }
+        else if (ringScale <= 0.001f)
+        {
+            ringScale = radiusScale;
         }
 
-        ringCenter = body.bounds.center;
-        float ext = Mathf.Max(body.bounds.extents.x, body.bounds.extents.y);
-        ringScale = ext * radiusScale / 0.38f;
         ringRenderer.transform.position = ringCenter;
         ringRenderer.transform.localScale = Vector3.one * ringScale;
         ClearSegments();
@@ -823,7 +1047,7 @@ public class GravityRingUI : MonoBehaviour
             return;
         }
 
-        StartHold(best, best.GetComponentInChildren<Collider2D>());
+        StartHoldBlock(best, best.GetComponentInChildren<Collider2D>());
         debugHold = true;
         Activate();
         DebugSetDirection(Vector2.up);
