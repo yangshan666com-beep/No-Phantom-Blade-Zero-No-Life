@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19c9cdb8f065469797bf7d00c74d9849, type: 3}
+  m_Name: Settings
+  m_EditorClassIdentifier: 
+  footstepVolume: 0.65
+  mechanismStartVolume: 0.72
+  landingVolume: 0.75
+  musicVolume: 0.28
+  mechanismVolume: 0.5
+  objectImpactVolume: 0.8
+  minimumObjectImpactSpeed: 1.5
+  objectImpactCooldown: 0.22
+  arrivalStillTime: 0.18
+  strideDistance: 2.6
+  minimumStepInterval: 0.17

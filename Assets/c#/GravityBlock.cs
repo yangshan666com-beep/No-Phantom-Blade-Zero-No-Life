@@ -9,6 +9,13 @@ public class GravityBlock : MonoBehaviour
     SpriteRenderer sprite;
     Color normalColor;
     Vector2 gravityDirection = Vector2.down;
+    CastleBlockAudio blockAudio;
+
+    void OnEnable()
+    {
+        blockAudio = GetComponent<CastleBlockAudio>();
+        if (blockAudio == null) blockAudio = gameObject.AddComponent<CastleBlockAudio>();
+    }
 
     void Awake()
     {
@@ -16,6 +23,36 @@ public class GravityBlock : MonoBehaviour
         sprite = GetComponent<SpriteRenderer>();
         body.gravityScale = 0f;
         normalColor = sprite.color;
+        blockAudio = GetComponent<CastleBlockAudio>();
+        if (blockAudio == null) blockAudio = gameObject.AddComponent<CastleBlockAudio>();
+        ApplyNameDirection();
+    }
+
+    void Start()
+    {
+        ApplyNameDirection();
+    }
+
+    void ApplyNameDirection()
+    {
+        string n = gameObject.name.ToUpperInvariant();
+
+        if (n.Contains("GIW"))
+        {
+            gravityDirection = Vector2.up;
+        }
+        else if (n.Contains("GIA"))
+        {
+            gravityDirection = Vector2.left;
+        }
+        else if (n.Contains("GIS"))
+        {
+            gravityDirection = Vector2.down;
+        }
+        else if (n.Contains("GID"))
+        {
+            gravityDirection = Vector2.right;
+        }
     }
 
     void FixedUpdate()
@@ -25,7 +62,15 @@ public class GravityBlock : MonoBehaviour
 
     public void SetDirection(Vector2 dir)
     {
-        gravityDirection = dir.normalized;
+        Vector2 next = dir.normalized;
+        bool changed = next.sqrMagnitude > 0.5f && Vector2.Dot(gravityDirection, next) < 0.99f;
+        gravityDirection = next;
+        if (changed && Time.timeSinceLevelLoad > 0.2f)
+        {
+            if (blockAudio == null) blockAudio = GetComponent<CastleBlockAudio>();
+            if (blockAudio == null) blockAudio = gameObject.AddComponent<CastleBlockAudio>();
+            blockAudio.BeginMove(next);
+        }
     }
 
     public void Select(bool on)
