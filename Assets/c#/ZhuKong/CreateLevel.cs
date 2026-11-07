@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 public class CreateLevel : MonoBehaviour
@@ -142,6 +143,45 @@ public class CreateLevel : MonoBehaviour
         if (cursor != null)
         {
             cursor.SetPlayer(currentPlayer);
+        }
+
+        BindCamera(currentPlayer);
+    }
+
+    void BindCamera(Player1 player)
+    {
+        if (player == null)
+        {
+            return;
+        }
+
+        MonoBehaviour[] behaviours = FindObjectsOfType<MonoBehaviour>(true);
+
+        for (int i = 0; i < behaviours.Length; i++)
+        {
+            MonoBehaviour behaviour = behaviours[i];
+
+            if (behaviour == null || behaviour.GetType().Name != "CinemachineVirtualCamera")
+            {
+                continue;
+            }
+
+            System.Type type = behaviour.GetType();
+            PropertyInfo follow = type.GetProperty("Follow");
+            PropertyInfo lookAt = type.GetProperty("LookAt");
+
+            if (follow != null)
+            {
+                follow.SetValue(behaviour, player.transform);
+            }
+
+            if (lookAt != null)
+            {
+                lookAt.SetValue(behaviour, player.transform);
+            }
+
+            Debug.Log("CAMERA BOUND: " + player.name + " -> " + type.Name);
+            return;
         }
     }
 }

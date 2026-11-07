@@ -64,12 +64,6 @@ public static class MergeMaps
         musicBootstrap.music = music;
         musicBootstrap.playlist = music.Playlists;
 
-        ZhuKongUiDemo ui = boot.AddComponent<ZhuKongUiDemo>();
-        ui.config = config;
-
-        ZhuKongCameraBinder binder = boot.AddComponent<ZhuKongCameraBinder>();
-        binder.virtualCamera = FindVirtualCamera(scene);
-
         EditorSceneManager.SaveScene(scene);
         AddBuildScene(target);
         AssetDatabase.SaveAssets();

@@ -125,9 +125,6 @@ public static class ZhuKongWireup
         musicBootstrap.music = music;
         musicBootstrap.playlist = music.Playlists;
 
-        ZhuKongUiDemo ui = boot.AddComponent<ZhuKongUiDemo>();
-        ui.config = config;
-
         EditorSceneManager.SaveScene(demo, "Assets/Scenes/ZhuKongDemo.unity");
         AddBuildScene("Assets/Scenes/ZhuKongDemo.unity");
         AssetDatabase.SaveAssets();

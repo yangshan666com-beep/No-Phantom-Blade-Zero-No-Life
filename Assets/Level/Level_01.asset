@@ -19,10 +19,4 @@ MonoBehaviour:
   playerPrefab: {fileID: 8328476008789918957, guid: f8cbf88c68cfa48d4bffbe158b6fc232, type: 3}
   blockPrefab: {fileID: 1811030479241329659, guid: beddf7bd140b34b50be5899a233812a8, type: 3}
   backgroundPrefab: {fileID: 4391261225123812403, guid: 842166a5a840c4c279eb49d72729baa8, type: 3}
-  blocks:
-  - position: {x: 3, y: -2.5}
-    gravityDirection: {x: 0, y: -1}
-    scale: 0.3
-  - position: {x: -3, y: -2.5}
-    gravityDirection: {x: 0, y: -1}
-    scale: 0.3
+  blocks: []

@@ -914,7 +914,6 @@ GameObject:
   - component: {fileID: 2027387655}
   - component: {fileID: 2027387654}
   - component: {fileID: 2027387653}
-  - component: {fileID: 2027387652}
   m_Layer: 0
   m_Name: Bootstrap
   m_TagString: Untagged
@@ -922,19 +921,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2027387652
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2027387651}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5cdf6c359caf344b4bc1130440e61a5c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  config: {fileID: 11400000, guid: 4d2461a1a10367d438f8c30092094716, type: 2}
 --- !u!114 &2027387653
 MonoBehaviour:
   m_ObjectHideFlags: 0
