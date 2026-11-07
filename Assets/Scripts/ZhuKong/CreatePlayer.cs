@@ -9,6 +9,9 @@ public class CreatePlayer : MonoBehaviour
 
     Player1 current;
 
+    float invincibleUntil;
+    public bool IsInvincible { get { return Time.time < invincibleUntil; } }
+
     void OnEnable()  { GameSignals.LevelReady += HandleLevelReady; }
     void OnDisable() { GameSignals.LevelReady -= HandleLevelReady; }
 
@@ -19,9 +22,15 @@ public class CreatePlayer : MonoBehaviour
 
     public void Respawn()
     {
+        if(IsInvincible)
+        {
+            Debug.Log("[PlayerSpawner] 已复活,不能再复活");
+            return;
+        }
         if (current != null)
         {
             Destroy(current.gameObject);
+            current = null;
         }
 
         Vector3 pos = Vector3.zero;
@@ -49,6 +58,8 @@ public class CreatePlayer : MonoBehaviour
 
         GameSignals.MarkPlayerSpawned(current);   // 通知所有人：玩家就位
 
-        current.SetControlEnabled(true);          // 以后要加入场过场就挪到这里之后
+        current.SetControlEnabled(true);
+        invincibleUntil = Time.time + 0.5f;          
+        // 以后要加入场过场就挪到这里之后
     }
 }

@@ -6,6 +6,8 @@ public class GravityBlock : MonoBehaviour
     public float holdMass = 200f;
     public Color selectedColor = new Color(0.6f, 0.85f, 1f);
 
+    [Header("初始重力方向( 0,0 = 按物体名字判断，兼容旧方块)")]
+    public Vector2 initialDirection = Vector2.down;
     Rigidbody2D body;
     SpriteRenderer sprite;
     Color normalColor;
@@ -19,7 +21,16 @@ public class GravityBlock : MonoBehaviour
         body.mass = holdMass;
         body.interpolation = RigidbodyInterpolation2D.Interpolate;
         normalColor = sprite.color;
-        ApplyNameDirection();
+        // 优先用 Inspector 里设的方向；没设就退回按名字判断
+        if (initialDirection.sqrMagnitude > 0.01f)
+        {
+            gravityDirection = initialDirection.normalized;
+        }
+        else
+        {
+            ApplyNameDirection();
+        }
+        initialDirection = gravityDirection;
     }
 
     void Start()
