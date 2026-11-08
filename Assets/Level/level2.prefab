@@ -322,7 +322,7 @@ SliderJoint2D:
   m_BreakAction: 3
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 838.5377, y: 308.54608}
+  m_ConnectedAnchor: {x: 478.2226, y: 325.85043}
   m_AutoConfigureAngle: 0
   m_Angle: 90
   m_UseMotor: 0
@@ -782,6 +782,7 @@ GameObject:
   - component: {fileID: 5479889069821509029}
   - component: {fileID: 8637222961883233187}
   - component: {fileID: 4005554182448785804}
+  - component: {fileID: 9145924134783282403}
   m_Layer: 0
   m_Name: red_flag
   m_TagString: Untagged
@@ -869,6 +870,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   winPanel: {fileID: 0}
+--- !u!114 &9145924134783282403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2378505083301314235}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9e3af5ff15a34342a0810bd685fffa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selfIcon: {fileID: 21300000, guid: cd4ac533db9e4402d9a6326af545d9da, type: 3}
+  singleIcon: {fileID: 21300000, guid: f85202fa19fc444cab26d1549f2db680, type: 3}
+  globalIcon: {fileID: 21300000, guid: d68023984514a4b7bb1a59e3f9870e23, type: 3}
+  selfMax: 3
+  singleMax: 2
+  globalMax: 1
 --- !u!1 &2408300140672582977
 GameObject:
   m_ObjectHideFlags: 0
@@ -1155,7 +1174,7 @@ SliderJoint2D:
   m_BreakAction: 3
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 858.23773, y: 319.7461}
+  m_ConnectedAnchor: {x: 497.9226, y: 337.05045}
   m_AutoConfigureAngle: 0
   m_Angle: 90
   m_UseMotor: 0
@@ -1421,7 +1440,7 @@ SliderJoint2D:
   m_BreakAction: 3
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 817.6377, y: 288.7461}
+  m_ConnectedAnchor: {x: 457.3226, y: 306.05045}
   m_AutoConfigureAngle: 0
   m_Angle: 270
   m_UseMotor: 0
@@ -2348,7 +2367,7 @@ SliderJoint2D:
   m_BreakAction: 3
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 874.23773, y: 286.34607}
+  m_ConnectedAnchor: {x: 513.9226, y: 303.65045}
   m_AutoConfigureAngle: 0
   m_Angle: 270
   m_UseMotor: 0
@@ -3110,7 +3129,7 @@ SliderJoint2D:
   m_BreakAction: 3
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 532.1377, y: 155.34608}
+  m_ConnectedAnchor: {x: 171.8226, y: 172.65044}
   m_AutoConfigureAngle: 0
   m_Angle: 270
   m_UseMotor: 0

@@ -629,6 +629,11 @@ public class GravityRingUI : MonoBehaviour
 
         if (block != null)
         {
+            if (!SkillFlag.TryUseSingle())
+            {
+                return;
+            }
+
             block.SetDirection(direction);
             return;
         }
@@ -640,6 +645,11 @@ public class GravityRingUI : MonoBehaviour
         }
 
         if (!allMode)
+        {
+            return;
+        }
+
+        if (!SkillFlag.TryUseGlobal())
         {
             return;
         }
@@ -658,7 +668,7 @@ public class GravityRingUI : MonoBehaviour
 
         while (i < players.Length)
         {
-            players[i].TryChangeGravity(direction);
+            players[i].ChangeGravity(direction);
             i = i + 1;
         }
     }

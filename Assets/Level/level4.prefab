@@ -616,6 +616,7 @@ GameObject:
   - component: {fileID: 1879784012794587232}
   - component: {fileID: 2494524376098462011}
   - component: {fileID: 3491693938725733413}
+  - component: {fileID: 7814585761560751174}
   m_Layer: 0
   m_Name: red_flag (1)
   m_TagString: Untagged
@@ -703,6 +704,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   winPanel: {fileID: 0}
+--- !u!114 &7814585761560751174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1964441725155828615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9e3af5ff15a34342a0810bd685fffa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selfIcon: {fileID: 21300000, guid: cd4ac533db9e4402d9a6326af545d9da, type: 3}
+  singleIcon: {fileID: 21300000, guid: f85202fa19fc444cab26d1549f2db680, type: 3}
+  globalIcon: {fileID: 21300000, guid: d68023984514a4b7bb1a59e3f9870e23, type: 3}
+  selfMax: 4
+  singleMax: 3
+  globalMax: 1
 --- !u!1 &2572097802973442358
 GameObject:
   m_ObjectHideFlags: 0
