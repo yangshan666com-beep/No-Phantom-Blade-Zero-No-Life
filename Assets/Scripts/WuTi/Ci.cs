@@ -32,6 +32,6 @@ public class Ci : MonoBehaviour
         // 防止"重生瞬间又死"导致无限重建
    
         Debug.Log("[Ci] 玩家死亡 ");
-        GameSignals.MarkLevelReady(FindObjectOfType<CreateLevel>().CurrentLevelIndex);  // 重新生成当前关卡
+        player.RespawnAtSpawn();
     }
 }

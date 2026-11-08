@@ -72,6 +72,34 @@ public class Player1 : MonoBehaviour
         ChangeGravity(gravityDirection);
     }
 
+    void Start()
+    {
+        RespawnAtSpawn();
+    }
+
+    public void RespawnAtSpawn()
+    {
+        FuHuoDian spawn = FindObjectOfType<FuHuoDian>();
+
+        if (spawn == null)
+        {
+            Debug.LogWarning("[Player] 没有找到 FuHuoDian");
+            return;
+        }
+
+        transform.position = spawn.transform.position;
+
+        if (rb != null)
+        {
+            rb.velocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+        }
+
+        ChangeGravity(Vector2.down);
+        SetControlEnabled(true);
+        Debug.Log("[Player] 重生到 " + spawn.name + " " + spawn.transform.position);
+    }
+
     void Update()
     {
         if (rb == null)
