@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ChuShiHua : MonoBehaviour
+public class ChuShiHua
 {
     [Header("帧率")]
     [Tooltip("0 = 平台默认；-1 = 极限;120 = 固定上限。")]
@@ -10,23 +10,19 @@ public class ChuShiHua : MonoBehaviour
     [Header("更新频率")]
     [Tooltip("默认 0.02 = 每秒 50 次 FixedUpdate。")]
     public float fixedDeltaTime = 0.02f;
+
     // Start is called before the first frame update
-    int GuanQia = 0;                    // 关卡索引, 0 = 第一关
-    void Awake()
+    [Header("关卡入口")]
+    [Tooltip("直接在编辑器里 Play 本场景时进入第几关（从菜单进入时以菜单为准）")]
+    public int GuanQia = 0;
+
+    // ===== 应用级设置：不挂在任何场景上，游戏启动时执行一次 =====
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    static void ApplyAppSettings()
     {
         QualitySettings.vSyncCount = 0;
-        Time.fixedDeltaTime = fixedDeltaTime;
-        Application.targetFrameRate = targetFrameRate;
-    }
-    void Start()
-    {
-        //后续在此增加音乐触发代码
-        Enter(GuanQia);       //暂时直接进入关卡1
-    }
-    public void Enter(int newGuanQia)
-    {
-        Debug.Log("[ChuShiHua] 请求进入第 " + (newGuanQia + 1) + " 关");
-        GameSignals.RequestLevel(newGuanQia);
+        Time.fixedDeltaTime = 0.02f;
+        Application.targetFrameRate = 120;
     }
     
     // Update is called once per frame
