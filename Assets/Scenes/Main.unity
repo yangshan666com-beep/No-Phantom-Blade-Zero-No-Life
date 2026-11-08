@@ -270,7 +270,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &102463671
 Transform:
   m_ObjectHideFlags: 0
@@ -298,7 +298,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42d2790e5fb7665478f1c982bb6d6b0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerPrefab: {fileID: 0}
+  playerPrefab: {fileID: 8328476008789918957, guid: f8cbf88c68cfa48d4bffbe158b6fc232, type: 3}
 --- !u!114 &102463673
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -311,9 +311,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a8497e257268ed4bb654e91d03f643a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levels: []
+  levels:
+  - displayName: 2
+    layoutPrefab: {fileID: 2022058263686428372, guid: 58b75c148f2364eb7aa8ff68da42cb56, type: 3}
+  - displayName: 3
+    layoutPrefab: {fileID: 5315389460309805675, guid: e9fb37b4228814c97a0b4589aabe82d4, type: 3}
   levelRootName: '[Level]'
-  CurrentLevelIndex: 0
 --- !u!114 &102463674
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -328,7 +331,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetFrameRate: 120
   fixedDeltaTime: 0.02
-  GuanQia: 0
 --- !u!1 &202603771
 GameObject:
   m_ObjectHideFlags: 0
