@@ -11,7 +11,7 @@ public class ChuShiHua : MonoBehaviour
     [Tooltip("默认 0.02 = 每秒 50 次 FixedUpdate。")]
     public float fixedDeltaTime = 0.02f;
     // Start is called before the first frame update
-    public int GuanQia = 0;
+    int GuanQia = 0;                    // 关卡索引, 0 = 第一关
     void Awake()
     {
         QualitySettings.vSyncCount = 0;
@@ -25,7 +25,7 @@ public class ChuShiHua : MonoBehaviour
     }
     public void Enter(int newGuanQia)
     {
-        Debug.Log("[Bootstrap] 请求进入第 " + newGuanQia + " 关");
+        Debug.Log("[ChuShiHua] 请求进入第 " + (newGuanQia + 1) + " 关");
         GameSignals.RequestLevel(newGuanQia);
     }
     

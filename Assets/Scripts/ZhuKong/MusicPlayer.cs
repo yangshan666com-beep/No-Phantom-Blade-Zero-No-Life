@@ -35,7 +35,7 @@ public class MusicPlayer : MonoBehaviour
         currentPlaylist = change;
         if (currentPlaylist == null || currentPlaylist.Length == 0)
         {
-            Debug.LogWarning("[MusicManager] clips 是空的，没有音乐可播");
+            Debug.LogWarning("[MusicPlayer] clips 是空的，没有音乐可播");
             return;
         }
         paused = false;

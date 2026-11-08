@@ -18,7 +18,7 @@ public class CreateLevel : MonoBehaviour
     public string levelRootName = "[Level]";
 
     Transform levelRoot;
-    public int CurrentLevelIndex = 0;
+    public int CurrentLevelIndex { get; private set; } = 0;
 
     void OnEnable()                                          // 订阅事件
     {GameSignals.LevelRequested += Create;}
@@ -36,14 +36,14 @@ public class CreateLevel : MonoBehaviour
         CurrentLevelIndex = index;
         if (index < 0 || index >= levels.Count)
         {
-            Debug.LogError("[LevelDirector] 关卡索引越界: " + index + "（共 " + levels.Count + " 关）");
+            Debug.LogError("[CreateLevel] 关卡索引越界: " + index + "（共 " + levels.Count + " 关）");
             return;
         }
 
         LevelEntry config = levels[index];
         if (config.layoutPrefab == null)
         {
-            Debug.LogError("[LevelDirector] 第 " + index + " 关的 LevelEntry 是空的");
+            Debug.LogError("[CreateLevel] 第 " + (index+1) + " 关的 LevelEntry 是空的");
             return;
         }
 
@@ -54,7 +54,7 @@ public class CreateLevel : MonoBehaviour
 
         GameSignals.MarkLevelReady(index);                                         // 通知关卡已生成完毕
 
-        Debug.Log("[LevelDirector] 第 " + index + " 关「" + config.displayName + "」生成完毕");
+        Debug.Log("[CreateLevel] 第 " + (index+1) + " 关「" + config.displayName + "」生成完毕");
     }
 
     // ---------- 清空 ----------

@@ -24,7 +24,7 @@ public class CreatePlayer : MonoBehaviour
     {
         if(IsInvincible)
         {
-            Debug.Log("[PlayerSpawner] 已复活,不能再复活");
+            Debug.Log("[CreatePlayer] 已复活,不能再复活");
             return;
         }
         if (current != null)
@@ -41,7 +41,7 @@ public class CreatePlayer : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("[PlayerSpawner] 关卡里没有 FuHuoDian,使用兜底坐标");
+            Debug.LogWarning("[CreatePlayer] 关卡里没有 FuHuoDian,使用兜底坐标");
         }
 
         GameObject go = Instantiate(playerPrefab, pos, Quaternion.identity);
@@ -50,7 +50,7 @@ public class CreatePlayer : MonoBehaviour
         current = go.GetComponent<Player1>();
         if (current == null)
         {
-            Debug.LogError("[PlayerSpawner] playerPrefab 上没有挂 Player1");
+            Debug.LogError("[CreatePlayer] playerPrefab 上没有挂 Player1");
             return;
         }
 
@@ -59,7 +59,7 @@ public class CreatePlayer : MonoBehaviour
         GameSignals.MarkPlayerSpawned(current);   // 通知所有人：玩家就位
 
         current.SetControlEnabled(true);
-        invincibleUntil = Time.time + 0.5f;          
+        invincibleUntil = Time.time + 0.05f;          
         // 以后要加入场过场就挪到这里之后
     }
 }
