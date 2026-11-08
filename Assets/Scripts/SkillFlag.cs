@@ -10,7 +10,7 @@ public class SkillFlag : MonoBehaviour
 
     [Header("剩余次数上限")]
     public int selfMax = 3;
-    public int singleMax = 2;
+    public int singleMax = 3;
     public int globalMax = 1;
 
     static SkillFlag current;
