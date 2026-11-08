@@ -79,6 +79,7 @@ public class Player1 : MonoBehaviour
 
     public void RespawnAtSpawn()
     {
+        SkillFlag.ResetCharges();
         FuHuoDian spawn = FindObjectOfType<FuHuoDian>();
 
         if (spawn == null)
@@ -367,6 +368,18 @@ public class Player1 : MonoBehaviour
     public void TryChangeGravity(Vector2 dir)
     {
         if (!onGround)
+        {
+            return;
+        }
+
+        Vector2 next = dir.normalized;
+
+        if (Vector2.Dot(next, gravityDirection) > 0.99f)
+        {
+            return;
+        }
+
+        if (!SkillFlag.TryUseSelf())
         {
             return;
         }
